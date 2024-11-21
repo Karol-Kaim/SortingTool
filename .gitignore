@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /SortingTool/SampleFiles/tmp1MB.txt
+/SortingTool/SampleFiles/tmp1gb.txt
+/SortingTool/SampleFiles/tmp256MB.txt
