@@ -10,7 +10,7 @@ if (args.Length > 0)
     //set configuration
 }
 
-SortingEngine engine = new SortingEngine(path, batchSize : 104857);
+SortingEngine engine = new SortingEngine(path, outputPath: outputPath, batchSize : 104857);
 
 Stopwatch stopwatch = new Stopwatch();
 stopwatch.Start();

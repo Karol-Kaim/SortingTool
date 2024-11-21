@@ -54,10 +54,10 @@ namespace SortingTool
                     Int64 sumOfCharLengths = 0;
                     String? line;
                     List<HappyPanda> list = new List<HappyPanda>();
-                    HappyPanda panda;
-                    TaskFactory taskFactory = new TaskFactory();
-                    List<Task> batchTaskList = new List<Task>();
-                    Task sortBatchTask;
+                    HappyPanda panda = null;
+                    TaskFactory<String> taskFactory = new TaskFactory<String>();
+                    List<Task<String>> batchTaskList = new List<Task<String>>();
+                    Task<String> sortBatchTask;
 
                     while (!sr.EndOfStream)
                     {
@@ -95,6 +95,38 @@ namespace SortingTool
                     anySorted.Wait();
                     while (batchTaskList.Count > 0)
                     {
+                        List<Task<String>> toMergeTasks = new List<Task<String>>();
+                        List<Task<String>> newBatchList = new List<Task<String>>();
+                        foreach (var item in batchTaskList)
+                        {
+                            if (item.Status == TaskStatus.RanToCompletion)
+                            {
+                                toMergeTasks.Add(item);
+                            }
+                            else
+                            {
+                                newBatchList.Add(item);
+                            }
+                        }
+
+                        while (toMergeTasks.Count > 1)
+                        {
+                            String firstFile = toMergeTasks[0].Result;
+                            String secondFile = toMergeTasks[1].Result;
+
+                            Task<String> mergingTask = taskFactory.StartNew(() => { return MergingFiles(firstFile, secondFile); });
+                            toMergeTasks.RemoveRange(0, 2);
+                            newBatchList.Add(mergingTask);
+                        }
+                        if (toMergeTasks.Count > 1)
+                        {
+                            batchTaskList.AddRange(toMergeTasks);
+                        }
+
+                        batchTaskList = newBatchList;
+
+                        anySorted = Task.WhenAny(batchTaskList);
+                        anySorted.Wait();
                     }
 
                     //Write to File
@@ -106,22 +138,106 @@ namespace SortingTool
                 Console.WriteLine(ex.ToString());
                 return false;
             }
-            catch
-            {
-                Console.WriteLine("Error during sorting");
-                return false;
-            }
             return true;
         }
 
-        private Task StartBatchSorting(List<HappyPanda> list, TaskFactory taskFactory, List<Task> batchTaskList)
+        private String MergingFiles(String firstFile, String secondFile)
         {
-            Task sortBatchTask = taskFactory.StartNew<bool>(() => { return createSortedBatchFile(list); });
+            StreamReader first = new StreamReader(firstFile);
+            StreamReader second = new StreamReader(secondFile);
+            String outputFile = String.Format("mergeTMP_{0}_{1}.tmp", DateTime.UtcNow.ToString("yyyyMMddhhmmss"), Task.CurrentId);
+            StreamWriter output = new StreamWriter(outputFile);
+
+            HappyPanda firstPanda = null;
+            HappyPanda secondPanda = null;
+            String firstEntry, secondEntry;
+
+            firstEntry = first.ReadLine();
+            secondEntry = second.ReadLine();
+            HappyPanda.TryParse(firstEntry, out firstPanda);
+            HappyPanda.TryParse(secondEntry, out secondPanda);
+
+            while (!first.EndOfStream && !second.EndOfStream)
+            {
+
+                if (firstPanda != null && secondPanda != null)
+                {
+                    if (firstPanda.CompareTo(secondPanda) > 0)
+                    {
+                        output.WriteLine(secondPanda.ToString());
+                        secondEntry = second.ReadLine();
+                        HappyPanda.TryParse(secondEntry, out secondPanda);
+                    }
+                    else
+                    {
+                        output.WriteLine(firstPanda.ToString());
+                        firstEntry = first.ReadLine();
+                        HappyPanda.TryParse(firstEntry, out firstPanda);
+                    }
+                }
+            }
+
+            if (!first.EndOfStream)
+            {
+                output.WriteLine(firstEntry);
+                //add remaining items
+                while (!first.EndOfStream)
+                { output.WriteLine(first.ReadLine()); }
+            }
+
+            if (!second.EndOfStream)
+            {
+                output.WriteLine(secondEntry);
+                while (!second.EndOfStream)
+                { output.WriteLine(second.ReadLine()); }
+            }
+
+            //while(!first.EndOfStream)
+            //{
+            //    string? firstEntry = first.ReadLine();
+            //    if (firstEntry != null)
+            //    {
+            //        HappyPanda.TryParse(firstEntry, out firstPanda);
+                        
+            //    }
+            //    while (!second.EndOfStream)
+            //    {
+            //        string? secondEntry = second.ReadLine();
+
+            //        if (secondEntry != null)
+            //        {
+            //            HappyPanda.TryParse(secondEntry, out secondPanda);
+            //            if (firstPanda != null && secondPanda != null)
+            //            {
+            //                if (firstPanda.CompareTo(secondPanda) > 0)
+            //                {
+            //                    output.WriteLine(secondPanda.ToString());
+            //                    continue;
+            //                }
+            //                else
+            //                {
+            //                    output.WriteLine(firstPanda.ToString());
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            first.Dispose();
+            second.Dispose();
+            output.Dispose();
+            return outputFile;
+        }
+
+        private Task<String> StartBatchSorting(List<HappyPanda> list, TaskFactory<String> taskFactory, List<Task<String>> batchTaskList)
+        {
+            Task<String> sortBatchTask = taskFactory.StartNew(() => { return CreateSortedBatchFile(list); });
             batchTaskList.Add(sortBatchTask);
             return sortBatchTask;
         }
 
-        private bool createSortedBatchFile(List<HappyPanda> list)
+        private String CreateSortedBatchFile(List<HappyPanda> list)
         {
             String outputPath = String.Format("batch_{0}.tmp",Task.CurrentId);
             list.Sort();
@@ -130,7 +246,7 @@ namespace SortingTool
                 foreach(HappyPanda p in list) 
                 { writer.WriteLine(p.ToString()); }                
             }
-            return true;
+            return outputPath;
             //throw new NotImplementedException();
         }
     }

@@ -14,9 +14,9 @@ namespace SampleFileGenerationApp
         private readonly Int64 minSize = 1024;
 
         private Dictionary<Int64, String> wordDictionary = new Dictionary<Int64, String>();
-        private readonly Int64 kilo = 1024;
-        private readonly Int64 mega = 1048576;
-        private readonly Int64 giga = 1073741824;
+        //private readonly Int64 kilo = 1024;
+        //private readonly Int64 mega = 1048576;
+        //private readonly Int64 giga = 1073741824;
 
         internal SampleFileGenerator(String wordsListFilePath = "WordsList.txt", Int64 minSize = 1024)
         {
@@ -67,11 +67,6 @@ namespace SampleFileGenerationApp
             {
                 Console.Write("Error while generating file: ");
                 Console.WriteLine(ex.Message);
-                return false;
-            }
-            catch
-            {
-                Console.WriteLine("Error while generating file.");
                 return false;
             }
         }

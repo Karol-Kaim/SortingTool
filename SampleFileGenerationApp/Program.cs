@@ -38,7 +38,7 @@ class SampleFileGenerationApp
 
         fileGenerator.GenerateToTextFile("tmp.txt");
 
-        stopwatch.Stop()
+        stopwatch.Stop();
         Console.Write("Elapsed time: {0}", stopwatch.Elapsed);
         //Console.WriteLine(end.TimeOfDay);
         //Console.Write(String.Format("Total time: {0} hours, {1} minutes, {2} seconds", runLength.Hours, runLength.Minutes, runLength.Seconds));
