@@ -14,6 +14,23 @@ namespace SortingToolClass
             this.key = key;
         }
 
+        public HappyPanda(String stringToParse)
+        {
+            int splitIndex = stringToParse.IndexOf(separator);
+            Int64 parsedNumber = 0;
+            String parsedKey = String.Empty;
+            if (splitIndex > 0)
+            {
+                if (Int64.TryParse(stringToParse.Substring(0, splitIndex), out parsedNumber))
+                {
+                    parsedKey = stringToParse.Substring(splitIndex + separator.Length, stringToParse.Length - splitIndex - separator.Length);
+
+                }
+            }
+            this.number = parsedNumber;
+            this.key = parsedKey;
+        }
+
         public static bool TryParse(String stringToParse, out HappyPanda? happyPanda)
         {
             int splitIndex = stringToParse.IndexOf(separator);
