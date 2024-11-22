@@ -31,14 +31,14 @@ namespace SortingTool
             if (splitIndexX > 0 && splitIndexY > 0)
             {
 
-                parsedKeyX = x.Substring(splitIndexX + _separator.Length, x.Length - splitIndexX - _separator.Length);
-                parsedKeyY = y.Substring(splitIndexY + _separator.Length, y.Length - splitIndexY - _separator.Length);
+                parsedKeyX = l1.Substring(splitIndexX + _separator.Length, l1.Length - splitIndexX - _separator.Length);
+                parsedKeyY = l2.Substring(splitIndexY + _separator.Length, l2.Length - splitIndexY - _separator.Length);
 
                 int initialComparison = parsedKeyX.CompareTo(parsedKeyY);
 
                 if (initialComparison == 0)
                 {
-                    if (Int64.TryParse(x.Substring(0, splitIndexX), out parsedNumberX) && Int64.TryParse(y.Substring(0, splitIndexY), out parsedNumberY))
+                    if (Int64.TryParse(l1.Substring(0, splitIndexX), out parsedNumberX) && Int64.TryParse(l2.Substring(0, splitIndexY), out parsedNumberY))
                     {
                         return parsedNumberX.CompareTo(parsedNumberY);
                     }
