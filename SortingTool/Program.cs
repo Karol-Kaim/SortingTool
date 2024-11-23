@@ -5,14 +5,15 @@ using SortingTool;
 String path = "SampleFiles\\tmp1gb.txt";
 String outputPath = "sorted.txt";
 //Int64 batchSize = 104857600;
-Int64 batchSize = 0;
+Int32 batchSize = 0;
 
 if (args.Length > 0)
 {
     //set configuration
 }
 
-SortingEngineBase engine = new DictionarySortingEngine(path, outputPath: outputPath, batchSize : batchSize);
+//SortingEngineBase engine = new DictionarySortingEngine(path, outputPath: outputPath, batchSize : batchSize);
+SortingEngineBase engine = new SortingEngine(path, outputPath: outputPath, batchSize: batchSize);
 
 Stopwatch stopwatch = new Stopwatch();
 stopwatch.Start();

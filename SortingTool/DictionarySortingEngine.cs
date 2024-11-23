@@ -12,7 +12,7 @@ namespace SortingTool
     {
         private static string _separator = ". ";
 
-        public DictionarySortingEngine(string inputPath, string outputPath, Int64 batchSize)
+        public DictionarySortingEngine(string inputPath, string outputPath, Int32 batchSize)
             : base(inputPath, outputPath: outputPath, batchSize:batchSize)
         {
         }
@@ -153,9 +153,7 @@ internal Task<String> StartDictionaryBatchSorting(Dictionary<string, List<Int64>
             Console.WriteLine("Starting sorting file {1} at: {0}", DateTime.UtcNow.ToString(), outputPath);
 #endif
             //list.Sort(_comparer);
-#if DEBUG
-            Console.WriteLine("Writing to file {1} at: {0}", DateTime.UtcNow.ToString(), outputPath);
-#endif
+
             using (StreamWriter writer = new StreamWriter(outputPath))
             {
                 var keys = list.Keys.OrderBy(k => k).ToList();

@@ -12,10 +12,10 @@ namespace SortingTool
     {
         internal String inputFilePath;
         internal String outputFilePath;
-        internal Int64 batchSize;
-        internal TaskFactory<String> _taskFactory = new TaskFactory<String>();
+        internal Int32 batchSize;
+        internal TaskFactory _taskFactory = new TaskFactory();
 
-        public SortingEngineBase(String inputPath, String outputPath = "sorted.txt", Int64 batchSize = 0, Int64 parallelMax = 0)
+        public SortingEngineBase(String inputPath, String outputPath = "sorted.txt", Int32 batchSize = 0, Int32 parallelMax = 0)
         {
             this.inputFilePath = inputPath;
             this.outputFilePath = outputPath;
@@ -31,7 +31,7 @@ namespace SortingTool
                 float availableMB = availableMemory.NextValue();
                 Console.WriteLine($"Available Physical Memory: {availableMB} MB");
                 float availableMemoryChars = availableMB * 1024 * 1024 / 20 * 9; // about 90% per core, char took 2B
-                this.batchSize = (Int64)(availableMemoryChars / processorCount);
+                this.batchSize = (Int32)(availableMemoryChars / processorCount);
             }
         }
 
@@ -106,11 +106,10 @@ namespace SortingTool
 
             List<Task<String>> resultList = new List<Task<String>>();
             StreamReader sr = new StreamReader(inputFilePath, new FileStreamOptions() { Options = FileOptions.SequentialScan, Mode = FileMode.Open });
-            Int64 index = 0;
             Int64 sumOfCharLengths = 0;
             String? line;
             Task<String> sortBatchTask;
-            List<String> list = new List<String>();
+            List<String> list = new List<String>(batchSize);
 #if DEBUG
             Console.WriteLine("Starting reading file at: {0}", DateTime.UtcNow.ToString());
 #endif
@@ -137,7 +136,6 @@ namespace SortingTool
 
 
                 }
-                index++;
             }
 
             sr.Dispose();
@@ -153,11 +151,14 @@ namespace SortingTool
 
         internal String MergingFiles(String firstFile, String secondFile)
         {
+
             StreamReader first = new StreamReader(firstFile);
             StreamReader second = new StreamReader(secondFile);
             String outputFile = String.Format("mergeTMP_{0}_{1}.tmp", DateTime.UtcNow.ToString("yyyyMMddhhmmss"), Task.CurrentId);
             StreamWriter output = new StreamWriter(outputFile);
-
+#if DEBUG
+            Console.WriteLine("Starting merging to file {1} at: {0}", DateTime.UtcNow.ToString(), outputFile);
+#endif
             String firstEntry, secondEntry;
 
             firstEntry = first.ReadLine();
@@ -193,6 +194,9 @@ namespace SortingTool
                 while (!second.EndOfStream)
                 { output.WriteLine(second.ReadLine()); }
             }
+#if DEBUG
+            Console.WriteLine("Ending merging to file {1} at: {0}", DateTime.UtcNow.ToString(), outputFile);
+#endif
 
             first.Dispose();
             second.Dispose();
