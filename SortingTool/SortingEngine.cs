@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SortingToolClass;
 
 namespace SortingTool
 {
@@ -22,16 +21,10 @@ namespace SortingTool
 
         protected override String CreateSortedBatchFile(List<String> list)
         {
-            String outputPath = String.Format("batch_{0}.tmp", Task.CurrentId);
-            //#if DEBUG
-            //            Console.WriteLine("Starting sorting file by OrderBy {1} at: {0}", DateTime.UtcNow.ToString(), outputPath);
-            //#endif
-            //            var newList = list.OrderBy(x => x, _comparer).ToList();
+            String outputPath = String.Format("batch_{0}.tmp", Task.CurrentId);            
 #if DEBUG
             Console.WriteLine("Starting sorting file {1} at: {0}", DateTime.UtcNow.ToString(), outputPath);
 #endif
-            //list.Sort(_comparer);
-            //var sortedlist = list.OrderBy(s => s.Split(". ").Last());
             List<List<String>> partionedList = new List<List<String>>();
             List<Dictionary<String, List<Int32>>> dictionariesList = new List<Dictionary<string, List<int>>>();
 
@@ -52,11 +45,6 @@ namespace SortingTool
 #if DEBUG
             Console.WriteLine("Finished slicing list - file {1} at: {0}", DateTime.UtcNow.ToString(), outputPath);
 #endif
-            //list.Sort().AsParallel();
-            //Parallel.Invoke(() => { list.Sort(_comparer); });
-            //Parallel.ForEach(partionedList, plist => { 
-            //    plist.Sort(_comparer);
-            //});
             Parallel.For(0, partionedList.Count, (i) => { 
             var currentList = partionedList[i];
                 var currentDictionary = dictionariesList[i];
@@ -87,7 +75,6 @@ namespace SortingTool
             if (partitionsCount > 1)
             {
                 int firstHalf = partitionsCount / 2;
-                //list = MergeSortedLists(partionedList.Slice(0, firstHalf), partionedList.Slice(firstHalf, partitionsCount - firstHalf));
                 dict = MergeSortedDictionaries(dictionariesList.Slice(0, firstHalf), dictionariesList.Slice(firstHalf, partitionsCount - firstHalf));
             }
             else
@@ -97,8 +84,6 @@ namespace SortingTool
 #endif
             using (StreamWriter writer = new StreamWriter(outputPath))
             {
-                //foreach (String p in list)
-                //{ writer.WriteLine(p); }
                 foreach(string key in dict.Keys)
                 {
                     var sortedDict = dict[key].Order();
@@ -152,14 +137,12 @@ namespace SortingTool
             Dictionary<String, List<Int32>> resultPartA = null;
             Dictionary<String, List<Int32>> resultPartB = null;
             List<Task<Dictionary<String, List<Int32>>>> mergingTasks = new List<Task<Dictionary<String, List<Int32>>>>();
-            //List<Task> mergingTasks = new List<Task>();
 
             if (listA.Count > 1)
             {
                 Int32 half = listA.Count / 2;
                 var taskA = _taskDictFactory.StartNew(() => { return MergeSortedDictionaries(listA.Slice(0, half), listA.Slice(half, listA.Count - half)); });
                 mergingTasks.Add(taskA);
-                //Dictionary<String, List<Int32>> dictA = MergeSortedDictionaries(listA.Slice(0, half), listA.Slice(half, listA.Count - half));
             }
             else
             {
@@ -169,9 +152,8 @@ namespace SortingTool
             if (listB.Count > 1)
             {
                 Int32 half = listB.Count / 2;
-                var taskA = _taskDictFactory.StartNew(() => { return MergeSortedDictionaries(listB.Slice(0, half), listB.Slice(half, listA.Count - half)); });
-                mergingTasks.Add(taskA);
-                //Dictionary<String, List<Int32>> dictB = MergeSortedDictionaries(listB.Slice(0, half), listB.Slice(half, listB.Count - half));
+                var taskB = _taskDictFactory.StartNew(() => { return MergeSortedDictionaries(listB.Slice(0, half), listB.Slice(half, listB.Count - half)); });
+                mergingTasks.Add(taskB);
             }
             else
             {
@@ -232,7 +214,6 @@ namespace SortingTool
             while (indexA < mergedListA.Count && indexB < mergedListB.Count)
             {
                 if (_comparer.Compare(entryA, entryB) < 0)
-                //if (string.Compare(entryA, entryB) < 0)
                 {
                     result.Add(entryA);
                     indexA++;

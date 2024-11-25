@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using SortingTool;
 
-String path = "SampleFiles\\tmp1gb.txt";
+String path = "SampleFiles\\tmp.txt";
 String outputPath = "sorted.txt";
 //Int64 batchSize = 104857600;
 Int32 batchSize = 0;
