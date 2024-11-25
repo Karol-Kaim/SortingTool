@@ -37,6 +37,7 @@ class SampleFileGenerationApp
         SampleFileGenerator fileGenerator = new SampleFileGenerator(wordsListFilePath, minFileSize);
 
         fileGenerator.GenerateToTextFile("tmp.txt");
+        //fileGenerator.MultipleFile("tmp1gb.txt", 40);
 
         stopwatch.Stop();
         Console.Write("Elapsed time: {0}", stopwatch.Elapsed);

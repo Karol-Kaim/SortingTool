@@ -71,6 +71,29 @@ namespace SampleFileGenerationApp
             }
         }
 
+        public string MultipleFile(String fileName, int multipleTimes = 2)
+        {
+            String outputFileName = String.Format("{0}.m{1}", fileName, multipleTimes);
+
+            for (int i = 0; i < multipleTimes; i++)
+            {
+                using (StreamReader sr = new StreamReader(fileName))
+            {
+                    using (StreamWriter sw = new StreamWriter(outputFileName, true))
+                    {
+                        sw.AutoFlush = true;
+
+
+                        while (!sr.EndOfStream)
+                        {
+                            sw.WriteLine(sr.ReadToEnd());
+                        }
+
+                    }
+                }
+            }
+            return outputFileName;
+        }
         private static Random InitializeRandom()
         {
             int seed = DateTime.Now.Microsecond;
