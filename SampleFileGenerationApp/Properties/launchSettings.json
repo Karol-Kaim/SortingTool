@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SampleFileGenerationApp": {
+      "commandName": "Project",
+      "commandLineArgs": "-? -d SampleFiles\\ShortList.txt"
+    },
+    "Profil 1": {
+      "commandName": "Project"
+    }
+  }
+}
