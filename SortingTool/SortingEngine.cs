@@ -247,7 +247,7 @@ namespace SortingTool
 
         protected override int CompareEntries(string firstEntry, string secondEntry)
         {
-            return firstEntry.CompareTo(secondEntry);
+            return _comparer.Compare(firstEntry, secondEntry);
         }
     }
 }

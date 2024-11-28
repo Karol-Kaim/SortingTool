@@ -11,38 +11,33 @@ namespace SortingTool
         String _separator = ". ";
         int IComparer<string>.Compare(string? x, string? y)
         {
-            if (x == null || y == null)
-                return 0;
-
-            int splitIndexX = x.IndexOf(_separator);
-            int splitIndexY = y.IndexOf(_separator);
-            Int64 parsedNumberX = 0;
-            String parsedKeyX = String.Empty;
-            Int64 parsedNumberY = 0;
-            String parsedKeyY = String.Empty;
-
-            if (splitIndexX > 0 && splitIndexY > 0)
+            if (x != null && y != null)
             {
+                string[] first = x.Split(_separator);
+                string[] second = y.Split(_separator);
 
-                parsedKeyX = x.Substring(splitIndexX + _separator.Length, x.Length - splitIndexX - _separator.Length);
-                parsedKeyY = y.Substring(splitIndexY + _separator.Length, y.Length - splitIndexY - _separator.Length);
-
-                int initialComparison = parsedKeyX.CompareTo(parsedKeyY);
-
-                if (initialComparison == 0)
+                if (first.Length == 2 && second.Length == 2)
                 {
-                    if (Int64.TryParse(x.Substring(0, splitIndexX), out parsedNumberX) && Int64.TryParse(y.Substring(0, splitIndexY), out parsedNumberY))
+                    string firstKey = first[1];
+                    string secondKey = second[1];
+                    int initialComparer = firstKey.CompareTo(secondKey);
+                    if (initialComparer == 0)
                     {
-                        return parsedNumberX.CompareTo(parsedNumberY);
+                        Int32 firstNumber = 0;
+                        Int32 secondNumber = 0;
+                        if (Int32.TryParse(firstKey, out firstNumber) && Int32.TryParse(secondKey, out secondNumber))
+                        {
+                            return firstNumber - secondNumber;
+                        }
+                        else
+                            return 0;
                     }
                     else
-                        return 0;
+                        return initialComparer;
                 }
-                else
-                    return initialComparison;
+                else return 0;
             }
-            else
-                return 0;
+            else return 0;
         }
     }
 }
